@@ -70,5 +70,8 @@ if __name__ == '__main__':
         sys.exit(1)
 
     solutions = solve_nqueens(N)
-    print_solutions(solutions)
+    for solution in solutions:
+        print(solution)
+
+    sys.exit(0)
 
