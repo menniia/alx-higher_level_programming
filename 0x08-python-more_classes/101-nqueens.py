@@ -2,76 +2,54 @@
 
 import sys
 
-def is_safe(board, row, col, N):
-    # Check if there is a queen in the same column
-    for i in range(row):
-        if board[i][col] == 1:
-            return False
+class NQueens:
+    def __init__(self, n):
+        self.n = n
+        self.solutions = []
 
-    # Check upper diagonal on the left side
-    i = row - 1
-    j = col - 1
-    while i >= 0 and j >= 0:
-        if board[i][j] == 1:
-            return False
-        i -= 1
-        j -= 1
+    def solve(self):
+        queens = [-1] * self.n
+        self.place_queens(queens, 0)
+        return self.solutions
 
-    # Check upper diagonal on the right side
-    i = row - 1
-    j = col + 1
-    while i >= 0 and j < N:
-        if board[i][j] == 1:
-            return False
-        i -= 1
-        j += 1
+    def place_queens(self, queens, row):
+        if row == self.n:
+            solution = [[i, queens[i]] for i in range(self.n)]
+            self.solutions.append(solution)
+        else:
+            for col in range(self.n):
+                if self.is_valid_placement(queens, row, col):
+                    queens[row] = col
+                    self.place_queens(queens, row + 1)
 
-    return True
-
-def solve_nqueens(N):
-    board = [[0 for _ in range(N)] for _ in range(N)]
-    solutions = []
-    backtrack(board, 0, N, solutions)
-    return solutions
-
-def backtrack(board, row, N, solutions):
-    if row == N:
-        solution = []
-        for i in range(N):
-            for j in range(N):
-                if board[i][j] == 1:
-                    solution.append([i, j])
-        solutions.append(solution)
-        return
-
-    for col in range(N):
-        if is_safe(board, row, col, N):
-            board[row][col] = 1
-            backtrack(board, row + 1, N, solutions)
-            board[row][col] = 0
+    def is_valid_placement(self, queens, row, col):
+        for i in range(row):
+            if (
+                queens[i] == col or
+                queens[i] - col == i - row or
+                queens[i] - col == row - i
+            ):
+                return False
+        return True
 
 def print_solutions(solutions):
     for solution in solutions:
         print(solution)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
 
     try:
-        N = int(sys.argv[1])
+        n = int(sys.argv[1])
+        if n < 4:
+            raise ValueError
     except ValueError:
-        print("N must be a number")
+        print("N must be a number greater or equal to 4")
         sys.exit(1)
 
-    if N < 4:
-        print("N must be at least 4")
-        sys.exit(1)
-
-    solutions = solve_nqueens(N)
-    for solution in solutions:
-        print(solution)
-
-    sys.exit(0)
+    n_queens = NQueens(n)
+    solutions = n_queens.solve()
+    print_solutions(solutions)
 
